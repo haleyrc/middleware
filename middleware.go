@@ -12,7 +12,11 @@ import (
 // user passwords.
 func LogRequest(h http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Printf("%s %s %s\n", r.Method, r.URL.Path, r.Host)
+		host := r.Header.Get("X-Forwarded-For")
+		if host == "" {
+			host = r.Host
+		}
+		log.Printf("%s %s %s\n", r.Method, r.URL.Path, host)
 		h.ServeHTTP(w, r)
 	})
 }
